@@ -595,7 +595,11 @@ function submitRubricScores(rubricObj) {
         }
       }
       rubricTable += '</table>';
-      rubricTable += '<p><strong>Comments:</strong></p><p>' + submissionObj['comment'].toString()  + '</p>';
+      var htmlComment = submissionObj['comment'].toString()  // escape HTML
+      htmlComment = htmlComment.replace(/</g,'&lt;')
+      htmlComment = htmlComment.replace(/>/g,'&gt;')
+      htmlComment = htmlComment.replace(/\n/g,'<br/><br/>')
+      rubricTable += '<p><strong>Comments:</strong></p><p>' + htmlComment  + '</p>';
       if (submissionObj['audioWavFile1']) {
         rubricTable += '<p><strong>New audio comments:</strong></p>';
         rubricTable += '<ol>';
