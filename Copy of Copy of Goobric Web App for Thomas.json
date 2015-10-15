@@ -1,0 +1,90 @@
+{
+    "files": [
+        {
+            "type": "server_js", 
+            "id": "77ca713c-f250-4217-957b-5aa79d9d1d8a", 
+            "name": "Code"
+        }, 
+        {
+            "type": "server_js", 
+            "id": "7c4f4740-58b1-438c-acf6-84f467362d20", 
+            "name": "utilities"
+        }, 
+        {
+            "type": "html", 
+            "id": "753d8573-ef5e-4a08-9108-f4d64f9386e2", 
+            "name": "layout.js"
+        }, 
+        {
+            "type": "html", 
+            "id": "b1f768fa-809a-44c0-936a-ae46af1783e5", 
+            "name": "layout.css"
+        }, 
+        {
+            "type": "html", 
+            "id": "772d2683-3b0b-4d42-b989-1ddc9c538363", 
+            "name": "fixed-table-header.js"
+        }, 
+        {
+            "type": "html", 
+            "id": "350657d8-ccfd-40fa-909e-3d210061601d", 
+            "name": "newGoobricUi"
+        }, 
+        {
+            "type": "html", 
+            "id": "bf4a42af-5f20-4395-b79b-35aa2065f4ab", 
+            "name": "jquery-ui.css"
+        }, 
+        {
+            "type": "html", 
+            "id": "44661d2c-c47e-4603-b9f3-4094be8c62db", 
+            "name": "fixed-table-theme.css"
+        }, 
+        {
+            "type": "html", 
+            "id": "061fa5ff-a37e-44dd-933e-a9abb3db7320", 
+            "name": "spin.js"
+        }, 
+        {
+            "type": "server_js", 
+            "id": "601b0f4a-bd01-48b7-a2fc-ad7aa7e9ec11", 
+            "name": "audio-stuff"
+        }, 
+        {
+            "type": "server_js", 
+            "id": "c53d119f-1780-4ef0-ae89-de881ea9f7a5", 
+            "name": "lang globals"
+        }, 
+        {
+            "type": "server_js", 
+            "id": "df3ab595-c94a-4f0a-bb53-6b9eafd64581", 
+            "name": "associations"
+        }, 
+        {
+            "type": "server_js", 
+            "id": "f330300d-78dd-45be-a60e-4de521f23f6f", 
+            "name": "add library"
+        }, 
+        {
+            "type": "html", 
+            "id": "813a00c7-a004-4fad-bbd1-a199e0c61196", 
+            "name": "libraryAdded"
+        }, 
+        {
+            "type": "html", 
+            "id": "11a1b498-fe80-4d31-b0e0-07af0ce7e166", 
+            "name": "goobricHome"
+        }, 
+        {
+            "type": "server_js", 
+            "id": "b68297b6-d6ec-4a7d-9c3b-017f1ad35cb5", 
+            "name": "goobricHome-code"
+        }, 
+        {
+            "type": "html", 
+            "id": "229ebf64-3499-4bf4-8969-1244e9c38b06", 
+            "name": "rosterTile"
+        }
+    ], 
+    "id": "1ygZcxgpxeAW3E0w7sLtTuvNkA_CDB6_SPgYrz_iLfpCrvSBOwKI4yYRL"
+}
