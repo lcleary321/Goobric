@@ -1,5 +1,6 @@
 var playButtonUrl = 'https://storage.googleapis.com/goobric-icons/play-25x25.png';
-var webAppUrl = 'https://script.google.com/macros/s/AKfycby4mwRwQEwtecDQbD5vrA2opzkC8W0v9MfQbrWBPLUPvjTWero/exec';
+//var webAppUrl = 'https://script.google.com/macros/s/AKfycby4mwRwQEwtecDQbD5vrA2opzkC8W0v9MfQbrWBPLUPvjTWero/exec';
+var webAppUrl = 'https://script.google.com/macros/s/AKfycbxq9thsojHS5ARe0yNehvUC0mGsayAyplDNMFg50es/dev'
 
 function testGetAssociations() {
   var e = {};
@@ -15,7 +16,6 @@ function testGetAssociations() {
 
 function doGet(e) {
   setGoobricUid();
-  
   //running in web app mode
   if (e.parameter) {
     if (e.parameter.addLibrary === "true") {
@@ -87,26 +87,55 @@ function getFirstDoc(doctopusId, sheetId) {
   var ss = SpreadsheetApp.openById(doctopusId);
   var mappings = new ColumnMappings(sheetId, LANG);
   var sheets = ss.getSheets();
-  debugger;
+  var docData = {'student2doc':[],'docs':[]} // 
+  var retval = 0;
   for (var i=0; i<sheets.length; i++) {
     if (sheets[i].getSheetId() == sheetId) {
       var firstDataRange = sheets[i].getRange(2, 1, 1, sheets[i].getLastColumn());
       var firstRowData = getRowsDataNonNormalized(sheets[i], firstDataRange, 1)[0];
       if (firstRowData[mappings.fileKeyCol]) {
-        return firstRowData[mappings.fileKeyCol].split('||')[0];
+        retval = firstRowData[mappings.fileKeyCol].split('||')[0]; // Got our return value
+        var dataRange = getRowsDataNonNormalized(sheets[i],sheets[i].getDataRange(),1);
+        for (var ii=1; ii<dataRange.length; ii++) {
+	  // Now map the data...
+          row = dataRange[ii]
+          docData.student2doc.push([row['First Name']+' '+row['Last Name'],row['Link']])
+          docData.docs.push(row['File Key'])
+	}
       }
     }
   }
-  return "not found";
+  // Save our document information to user properties...
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('docData',JSON.stringify(docData));
+  if (retval) { return retval }
+  else {return "not found"; }
 }
 
-
+// docList for jump...
+function getDocList (docId) {
+  var userProperties = PropertiesService.getUserProperties();
+  // We persist data in userProperties docData property
+  var docData = JSON.parse(userProperties.getProperty('docData'));
+  if (docData['docs'].indexOf(docId) >= 0) {
+    // Use old data -- we match the ID
+    return docData['student2doc']
+  }
+  else {
+    // Get data from Doctopus spreadsheet
+    var associations = getAssociationsFromDocId(docId);
+    // getFirstDoc populates docList variable...
+    getFirstDoc(associations.doctopusId, associations.sheetId); 
+    // the data will have been updated in userProperties...
+    var docData = JSON.parse(userProperties.getProperty('docData'));    
+    return docData['student2doc']
+  }
+}
 
 function testGetRubricObj() {
   var docId = '1mq7esJ4HOZGPMgS5qRMHUlZTgV4hxJxV7H74QmcxDkw';
   var rubricObj = getRubricObject(docId);
   var rubricArray = createRubricArray(rubricObj)
-  debugger;
 }
 
 function getPrevewLink(url) {
@@ -613,9 +642,7 @@ function submitRubricScores(rubricObj) {
       }
       try {
         MailApp.sendEmail(emails.join(','), "Rubric assessment submitted for " + doc.getName(), '', {htmlBody: rubricTable});
-        Logger.log("sent");
       } catch(err) {
-        Logger.log(err.message);
         try {
           MailApp.sendEmail(userEmail, 'Goobric had trouble emailing scores', 'emails: ' + JSON.stringify(emails) + 'err: ' + err.message + + " Headers: " + headers.join(", ") + "Emailcol: " + emailColIndex + " " + JSON.stringify(rubricObj));
         } catch(err) {
@@ -739,7 +766,7 @@ function testOneUp() {
 }
 
 
-function oneUp(array, value) { 
+function oneUp(array, value) {
   if ((!array)||(array.indexOf(value)!==-1)) {
     return '';
   }
@@ -754,7 +781,7 @@ function oneUp(array, value) {
 }
 
 
-function oneDown(array, value) { 
+function oneDown(array, value) {
   if ((!array)||(array.indexOf(value)!==-1)) {
     return '';
   }
