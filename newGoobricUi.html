@@ -263,6 +263,13 @@ button {
   min-width: 40px;
 }
 
+.jump {
+  min-width: 80px;
+  font-weight: bold;
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
 .ui-layout-pane {
   padding: 0px;
   border: 0px;
@@ -847,7 +854,7 @@ function putToCloudStorage(location) {
     };
   
   function success(url) {
-     console.log('success');
+     console.log('success: '+url);
   }
   
   function failure(err) {
@@ -1143,7 +1150,9 @@ return view;
       }).sizePane("east", 280); 
       $('#waiting-icon-1').spin('large');
       $('#waiting-icon-3').spin('large');
+      // Setup doc chooser jump button
       google.script.run.withSuccessHandler(populateRubric).withFailureHandler(rubricFailure).getRubricObject(docId);
+      google.script.run.withSuccessHandler(populateDocChooser).withFailureHandler(docChooserFailure).getDocList(docId);
       if (navigator.appVersion.indexOf("Win")!=-1) {
         $(".fht-thead").css('scroll-y', 'auto');
       }
@@ -1201,7 +1210,8 @@ return view;
        $('#rubric-close-button').fadeToggle( 5000, "linear");
        $('#rubric-close-button-container').unbind('mouseenter mouseleave').hover(function() { $('#rubric-close-button').stop().fadeToggle( 1, "linear"); }, function() { $('#rubric-close-button').toggle(true).fadeToggle( 5000, "linear"); });
     }
-    
+
+
     
     function showError(type, resourceUrl, userEmail) {
       if (type === "no associations") {
@@ -1414,7 +1424,31 @@ return view;
       toggleSavedStateMessage(rubric);
     }
     
-    
+
+    // JumpList stuff
+    function populateDocChooser (docList) {
+      var jumpWidget = $('.jump')[0]
+      toSelect = 0;
+      for (var i=0; i<docList.length; i++) {
+        var name=docList[i][0];
+	var url=docList[i][1]; 
+	var selected = '';
+	if (url.indexOf(docId)>=0) {
+	  toSelect=i
+	  var selected = ' selected="selected"'
+	}
+        jumpWidget.appendChild($.parseHTML('<option value="'+url+'"'+selected+'>'+name+'</option>')[0])     	  
+      }
+      console.log('selecting option #'+toSelect);
+      jumpWidget.onchange = function() { setNewDoc("jump");};
+    }
+  
+   function docChooserFailure (err) {
+     console.log('docChooserFailure',err.message)
+   }
+										 
+
+										 
 function adjustTabs() { 
   var numTabs = 0;
   var maxWidth = $( "#tab-list" ).width();
@@ -1702,7 +1736,17 @@ function setNewDoc(action) {
   $('#rubric-container').toggle(false);
   $('iframe.ui-layout-center').toggle(false);
   $('#full-rubric-table').toggleClass('invisible', true);
-  var url = (action === "next") ? RUBRIC.nextDocUrl : RUBRIC.prevDocUrl;
+  switch (action) {
+  case "next":
+    var url = RUBRIC.nextDocUrl;
+    break;
+  case "prev":
+    var url = RUBRIC.prevDocUrl;
+    break;
+  case "jump":
+    var url = $('.jump')[0].value;
+    break;
+  }
   $('#docs-editor').attr('src', url);
   var driveKey = returnDriveKey(url); 
   google.script.run.withSuccessHandler(refreshRubric).getRubricObject(driveKey);
@@ -1871,7 +1915,7 @@ function returnDriveKey(url) {
           var key = urlArgs[6].split("key=")[1].split("#")[0];
           break;
         case "SPREADSHEET_NEW":
-          debugger;
+          //debugger;
           var key = urlArgs[7];
           break;
         case "PRESENTATION":
@@ -1980,6 +2024,8 @@ function truncate(input, n){
             <img id=recording-spinner src="https://storage.googleapis.com/goobric-icons/spinning_record_am.gif" />
         </div>
         <div id="button-panel" hidden>
+            <select class="jump"> <!-- We will insert options here... -->                 
+            </select>
             <div class="comments-container comments">Comments
                 <br/>
                 <textarea class="comment-textarea" rows="5" cols="36"></textarea>
