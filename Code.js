@@ -117,7 +117,7 @@ function getDocList (docId) {
   var userProperties = PropertiesService.getUserProperties();
   // We persist data in userProperties docData property
   var docData = JSON.parse(userProperties.getProperty('docData'));
-  if (docData['docs'].indexOf(docId) >= 0) {
+  if ('docs' in docData && docData['docs'].indexOf(docId) >= 0) {
     // Use old data -- we match the ID
     return docData['student2doc']
   }
