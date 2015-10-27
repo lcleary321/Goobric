@@ -13,6 +13,10 @@ function testGetAssociations() {
   debugger;
 }
 
+function testGetDocInfo () {
+  var docId = '1fFA9LbM0z8shareZFNm6sBlgg8dDXQc7yxdGuld1TiA';
+  getDocList(docId)
+}
 
 function doGet(e) {
   setGoobricUid();
@@ -94,6 +98,24 @@ function getFirstDoc(doctopusId, sheetId) {
       var firstDataRange = sheets[i].getRange(2, 1, 1, sheets[i].getLastColumn());
       var firstRowData = getRowsDataNonNormalized(sheets[i], firstDataRange, 1)[0];
       if (firstRowData[mappings.fileKeyCol]) {
+        return firstRowData[mappings.fileKeyCol].split('||')[0];
+			}
+		}
+	}
+  return "not found";
+}
+
+function getDocData (doctopusId, sheetId) {
+  var ss = SpreadsheetApp.openById(doctopusId);
+  var mappings = new ColumnMappings(sheetId, LANG);
+  var sheets = ss.getSheets();
+  var docData = {'student2doc':[],'docs':[]} // 
+  var retval = 0;
+  for (var i=0; i<sheets.length; i++) {
+    if (sheets[i].getSheetId() == sheetId) {
+      var firstDataRange = sheets[i].getRange(2, 1, 1, sheets[i].getLastColumn());
+      var firstRowData = getRowsDataNonNormalized(sheets[i], firstDataRange, 1)[0];
+      if (firstRowData[mappings.fileKeyCol]) {
         retval = firstRowData[mappings.fileKeyCol].split('||')[0]; // Got our return value
         var dataRange = getRowsDataNonNormalized(sheets[i],sheets[i].getDataRange(),1);
         for (var ii=1; ii<dataRange.length; ii++) {
@@ -105,31 +127,18 @@ function getFirstDoc(doctopusId, sheetId) {
       }
     }
   }
-  // Save our document information to user properties...
-  var userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('docData',JSON.stringify(docData));
-  if (retval) { return retval }
-  else {return "not found"; }
+	return docData
 }
 
 // docList for jump...
 function getDocList (docId) {
-  var userProperties = PropertiesService.getUserProperties();
-  // We persist data in userProperties docData property
-  var docData = JSON.parse(userProperties.getProperty('docData'));
-  if ('docs' in docData && docData['docs'].indexOf(docId) >= 0) {
-    // Use old data -- we match the ID
-    return docData['student2doc']
-  }
-  else {
-    // Get data from Doctopus spreadsheet
-    var associations = getAssociationsFromDocId(docId);
-    // getFirstDoc populates docList variable...
-    getFirstDoc(associations.doctopusId, associations.sheetId); 
-    // the data will have been updated in userProperties...
-    var docData = JSON.parse(userProperties.getProperty('docData'));    
-    return docData['student2doc']
-  }
+	// Log each call -- testing purposes
+  logsheet = SpreadsheetApp.openById('15PI0MjUk-Qxr13j29ZSrnJZpwEapaAoAB80w7Ziq9f0')
+  logsheet.getActiveSheet();
+  logsheet.appendRow(['Called getDocList',new Date()]);
+	var associations = getAssociationsFromDocId(docId);
+	docData = getDocData(associations.doctopusId, associations.sheetId)
+	return docData['student2doc']
 }
 
 function testGetRubricObj() {
