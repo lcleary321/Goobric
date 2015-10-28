@@ -142,9 +142,9 @@ function getDocData (doctopusId, sheetId) {
 // docList for jump...
 function getDocList (docId) {
 	// Log each call -- testing purposes
-  logsheet = SpreadsheetApp.openById('15PI0MjUk-Qxr13j29ZSrnJZpwEapaAoAB80w7Ziq9f0')
-  logsheet.getActiveSheet();
-  logsheet.appendRow(['Called getDocList',new Date()]);
+  //logsheet = SpreadsheetApp.openById('15PI0MjUk-Qxr13j29ZSrnJZpwEapaAoAB80w7Ziq9f0')
+  //logsheet.getActiveSheet();
+  //logsheet.appendRow(['Called getDocList',new Date()]);
 	var associations = getAssociationsFromDocId(docId);
 	student2doc = getDocData(associations.doctopusId, associations.sheetId)
 	return student2doc
