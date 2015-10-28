@@ -107,7 +107,6 @@ function getDocData (doctopusId, sheetId) {
   var ss = SpreadsheetApp.openById(doctopusId);
   var mappings = new ColumnMappings(sheetId, LANG);
   var sheets = ss.getSheets();
-	
   var student2doc = []
 	// docsDict Maps doc ID to student2doc index
 	// - we use this to compile groups
