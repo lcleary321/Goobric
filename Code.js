@@ -91,8 +91,6 @@ function getFirstDoc(doctopusId, sheetId) {
   var ss = SpreadsheetApp.openById(doctopusId);
   var mappings = new ColumnMappings(sheetId, LANG);
   var sheets = ss.getSheets();
-  var docData = {'student2doc':[],'docs':[]} // 
-  var retval = 0;
   for (var i=0; i<sheets.length; i++) {
     if (sheets[i].getSheetId() == sheetId) {
       var firstDataRange = sheets[i].getRange(2, 1, 1, sheets[i].getLastColumn());
