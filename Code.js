@@ -109,7 +109,11 @@ function getDocData (doctopusId, sheetId) {
   var ss = SpreadsheetApp.openById(doctopusId);
   var mappings = new ColumnMappings(sheetId, LANG);
   var sheets = ss.getSheets();
-  var docData = {'student2doc':[],'docs':[]} // 
+	
+  var student2doc = []
+	// docsDict Maps doc ID to student2doc index
+	// - we use this to compile groups
+	var docsDict = {} 
   var retval = 0;
   for (var i=0; i<sheets.length; i++) {
     if (sheets[i].getSheetId() == sheetId) {
@@ -119,15 +123,23 @@ function getDocData (doctopusId, sheetId) {
         retval = firstRowData[mappings.fileKeyCol].split('||')[0]; // Got our return value
         var dataRange = getRowsDataNonNormalized(sheets[i],sheets[i].getDataRange(),1);
         for (var ii=1; ii<dataRange.length; ii++) {
-	  // Now map the data...
+					// Now map the data...
           row = dataRange[ii]
-          docData.student2doc.push([row['First Name']+' '+row['Last Name'],row['Link']])
-          docData.docs.push(row['File Key'])
-	}
-      }
-    }
-  }
-	return docData
+					if (docsDict.hasOwnProperty(row['File Key'])) {
+						// Group work! Let's add our name to the list...
+						var prior_students = student2doc[docsDict[row['File Key']]][0]
+						var student_name = prior_students + ', '+row['First Name']+' '+row['Last Name']
+						student2doc[docsDict[row['File Key']]][0] =  student_name
+					}
+					else {
+						student2doc.push([row['First Name']+' '+row['Last Name'],row['Link']])
+						docsDict[row['File Key']] = (student2doc.length - 1) // 0-indexed
+					}
+				} // end for each row...
+      } // end if (firstRowData...
+    } // end if (sheets[i]...
+  } // end for each sheet...
+	return student2doc
 }
 
 // docList for jump...
@@ -137,8 +149,8 @@ function getDocList (docId) {
   logsheet.getActiveSheet();
   logsheet.appendRow(['Called getDocList',new Date()]);
 	var associations = getAssociationsFromDocId(docId);
-	docData = getDocData(associations.doctopusId, associations.sheetId)
-	return docData['student2doc']
+	student2doc = getDocData(associations.doctopusId, associations.sheetId)
+	return student2doc
 }
 
 function testGetRubricObj() {
