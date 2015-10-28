@@ -1426,28 +1426,29 @@ return view;
     }
     
 
-    // JumpList stuff
-    function populateDocChooser (docList) {
-      var jumpWidget = $('.jump')[0]
-      toSelect = 0;
-      for (var i=0; i<docList.length; i++) {
-        var name=docList[i][0];
-	var url=docList[i][1]; 
-	var selected = '';
-	if (url.indexOf(docId)>=0) {
-	  toSelect=i
-	  var selected = ' selected="selected"'
-	}
-        jumpWidget.appendChild($.parseHTML('<option value="'+url+'"'+selected+'>'+name+'</option>')[0])     	  
-      }
-      console.log('selecting option #'+toSelect);
-      jumpWidget.onchange = function() { setNewDoc("jump");};
+  // JumpList stuff
+  function populateDocChooser (docList) {
+		console.log('populateDocChoose');
+    var jumpWidget = $('.jump')[0]
+    toSelect = 0;
+    for (var i=0; i<docList.length; i++) {
+      var name=docList[i][0];
+			var url=docList[i][1]; 
+			var selected = '';
+			if (url.indexOf(docId)>=0) {
+				toSelect=i
+				var selected = ' selected="selected"'
+			}
+      jumpWidget.appendChild($.parseHTML('<option value="'+url+'"'+selected+'>'+name+'</option>')[0])     	  
     }
+    console.log('selecting option #'+toSelect);
+    jumpWidget.onchange = function() { setNewDoc("jump");};
+  }
   
-   function docChooserFailure (err) {
-     console.log('docChooserFailure',err.message)
-   }
-										 
+  function docChooserFailure (err) {
+    console.log('docChooserFailure',err.message)
+  }
+	
 
 										 
 function adjustTabs() { 
@@ -1593,6 +1594,18 @@ function submitComplete(autoAdvance) {
 }
 
     
+	function refreshJumpWidget (docId) {
+		var jumpWidget = $('.jump')
+		$('.jump option').each(function (idx) {
+			var url = this.value
+			if (url.indexOf(docId)>=0) {
+				jumpWidget.onchange = function () {}; // Don't do anything when we change...
+				jumpWidget.val(url);
+				jumpWidget.onchange = function () { setNewDoc("jump");} // Put back callback
+			}
+		}) // end foreach .jump option
+	}// end refreshJumpWidget
+
 function refreshRubric(rubric) {
       if (rubric.error === "No rubric association found") {
         showError("no associations", '', rubric.userEmail);
@@ -1615,7 +1628,9 @@ function refreshRubric(rubric) {
       fileIndex = 0;
       RUBRIC = JSON.parse(JSON.stringify(rubric));
       docId = RUBRIC.docId;
-      
+
+      refreshJumpWidget(docId)      
+
       if (RUBRIC.docAccess !== "VIEW") {
         if (RUBRIC.studentDocAccess === "VIEW") {
           $('#viewer-to-commenter-container').toggle(true);
