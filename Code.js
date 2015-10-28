@@ -660,10 +660,12 @@ function submitRubricScores(rubricObj) {
       }
       try {
         MailApp.sendEmail(emails.join(','), "Rubric assessment submitted for " + doc.getName(), '', {htmlBody: rubricTable});
+				Logger.log("sent");
       } catch(err) {
         try {
           MailApp.sendEmail(userEmail, 'Goobric had trouble emailing scores', 'emails: ' + JSON.stringify(emails) + 'err: ' + err.message + + " Headers: " + headers.join(", ") + "Emailcol: " + emailColIndex + " " + JSON.stringify(rubricObj));
         } catch(err) {
+					Logger.log(err.message);
         }
       }
     }
